@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>User Profile</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #333;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      margin: 0;
+    }
+
+    main {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+
+    .post {
+      margin-bottom: 20px;
+      padding: 20px;
+      background-color: #fff;
+      border: 1px solid #ddd;
+    }
+
+    .post h2 {
+      margin-top: 0;
+    }
+
+    .post p {
+      line-height: 1.5;
+    }
+
+    .form {
+      margin-top: 20px;
+    }
+
+    .form textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+
+    .form button {
+      padding: 10px 20px;
+      background-color: #333;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+
+    form button {
+      padding: 10px 20px;
+      background-color: #333;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+    
+    footer {
+      background-color: #333;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>User Home Page</h1>
+  </header>
+  <main>
+    <hr>
+    <div id="user-posts">
+    {% for post in my_posts %}
+    <article>
+        <form action="#" method="post">
+        {% csrf_token %}
+        <input name="id" value="{{ post.id }}" type="hidden">
+        <h2>{{ post.title }}</h2>
+        <p>{{ post.body|truncatewords:"1" }}</p>
+        <button type="submit" name="action" value="view_details">View Details</button>
+        </form>
+    </article>
+    <hr>
+    {% endfor %}
+    </div>
+
+    <h2>New Post</h2>
+    <div class="form">
+      <form action="#" method="post">
+      {% csrf_token %}
+      <textarea name="post-title" placeholder="Enter your new post title"></textarea>
+      <textarea name="post-content" placeholder="Enter your new post body"></textarea>
+      <button type="submit" name="action" value="new_post">Posting New Post</button>
+      </form>
+    </div>
+    <hr>
+
+    <div class="form">
+      <form action="#" method="post">
+      {% csrf_token %}
+      <button type="submit" name="action" value="view_all_posts">View all posts</button>
+      </form>
+    </div>
+    <div id="all-posts"></div>
+  </main>
+  <footer>
+    &copy; 2023 mybbs. All rights reserved.
+  </footer>
+</body>
+</html>

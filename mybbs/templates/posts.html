@@ -42,6 +42,14 @@
       line-height: 1.5;
     }
 
+    form button {
+      padding: 10px 20px;
+      background-color: #333;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+
     footer {
       background-color: #333;
       color: #fff;
@@ -57,8 +65,13 @@
   <main>
     {% for post in posts %}
     <article>
+      <form action="#" method="post">
+      {% csrf_token %}
+        <input name="id" value="{{ post.id }}" type="hidden">
         <h2>{{ post.title }}</h2>
         <p>{{ post.body|truncatewords:"1" }}</p>
+        <button type="submit" name="action" value="view_details">View Details</button>
+      </form>
     </article>
     {% endfor %}
   </main>
