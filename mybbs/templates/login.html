@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Login/Register Page</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #333;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      margin: 0;
+    }
+
+    main {
+      max-width: 400px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #f4f4f4;
+      border: 1px solid #ddd;
+    }
+
+    .form {
+      margin-bottom: 20px;
+    }
+
+    .form label {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .form input[type="text"],
+    .form input[type="password"] {
+      width: 95%;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+
+    .form button {
+      padding: 10px 20px;
+      background-color: #333;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+
+    footer {
+      background-color: #333;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Login/Register Page</h1>
+  </header>
+  <main>
+    <div id="login-form" class="form">
+      <h2>Login</h2>
+      <form name="login" action="#" method="post">
+      {% csrf_token %}
+      <label for="login-username">Username:</label>
+      <input type="text" name="login-username" placeholder="Enter your username">
+      <label for="login-password">Password:</label>
+      <input type="password" name="login-password" placeholder="Enter your password">
+      <button type="submit" name="action" value="login">Login</button>
+      </form>
+    </div>
+
+    <div id="register-form" class="form" style="display: none;">
+      <h2>Register</h2>
+      <form action="#" method="post">
+      {% csrf_token %}
+      <label for="register-username">Username:</label>
+      <input type="text" name="register-username" placeholder="Enter a username">
+      <label for="register-password">Password:</label>
+      <input type="password" name="register-password" placeholder="Enter a password">
+      <button type="submit" name="action" value="register">Register</button>
+      </form>
+    </div>
+
+    <p>Don't have an account? <a href="#" onclick="toggleForm()">Register here</a></p>
+  </main>
+  <footer>
+    &copy; 2023 mybbs. All rights reserved.
+  </footer>
+
+  <script>
+    function toggleForm() {
+      var loginForm = document.getElementById('login-form');
+      var registerForm = document.getElementById('register-form');
+
+      if (loginForm.style.display === 'none') {
+        loginForm.style.display = 'block';
+        registerForm.style.display = 'none';
+      } else {
+        loginForm.style.display = 'none';
+        registerForm.style.display = 'block';
+      }
+    }
+
+    function login() {
+      var usernameInput = document.getElementById('login-username');
+      var passwordInput = document.getElementById('login-password');
+
+      var username = usernameInput.value;
+      var password = passwordInput.value;
+
+      // Perform login logic here
+      // Example:
+      if (username === 'admin' && password === 'password') {
+        alert('Login successful');
+        // Redirect to home page or perform other actions
+      } else {
+        alert('Login failed. Please check your credentials.');
+      }
+
+      // Reset form fields
+      usernameInput.value = '';
+      passwordInput.value = '';
+    }
+
+    function register() {
+      var usernameInput = document.getElementById('register-username');
+      var passwordInput = document.getElementById('register-password');
+
+      var username = usernameInput.value;
+      var password = passwordInput.value;
+
+      // Perform registration logic here
+      // Example:
+      alert('Registration successful');
+      // Redirect to login page or perform other actions
+
+      // Reset form fields
+      usernameInput.value = '';
+      passwordInput.value = '';
+    }
+  </script>
+</body>
+</html>

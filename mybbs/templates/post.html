@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Post Page</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #333;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      margin: 0;
+    }
+
+    main {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+
+    .post {
+      margin-bottom: 20px;
+      padding: 20px;
+      background-color: #fff;
+      border: 1px solid #ddd;
+    }
+
+    .post h2 {
+      margin-top: 0;
+    }
+
+    .post p {
+      line-height: 1.5;
+    }
+
+    .comments {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid #ddd;
+    }
+
+    .comment {
+      margin-bottom: 10px;
+      padding: 10px;
+      background-color: #f4f4f4;
+      border: 1px solid #ddd;
+    }
+
+    .comment p {
+      margin: 0;
+    }
+
+    .form {
+      margin-top: 20px;
+    }
+
+    .form textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+
+    .form button {
+      padding: 10px 20px;
+      background-color: #333;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+
+    footer {
+      background-color: #333;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Post Page</h1>
+  </header>
+  <main>
+    <div class="post">
+      <h2>{{ title }}</h2>
+      <p>{{ body|linebreaks }}</p>
+    </div>
+    <!-- <div class="comments">
+      <div class="comment">
+        <p>Comment 1</p>
+      </div>
+      <div class="comment">
+        <p>Comment 2</p>
+      </div>
+    </div> -->
+    <!-- <div class="form">
+      <textarea id="comment-input" placeholder="Enter your comment"></textarea>
+      <button onclick="submitComment()">Submit</button>
+    </div> -->
+  </main>
+  <footer>
+    &copy; 2023 mybbs. All rights reserved.
+  </footer>
+
+  <script>
+    function submitComment() {
+      var commentInput = document.getElementById('comment-input');
+      var commentText = commentInput.value;
+      var commentsContainer = document.querySelector('.comments');
+
+      var commentElement = document.createElement('div');
+      commentElement.classList.add('comment');
+      var commentParagraph = document.createElement('p');
+      commentParagraph.textContent = commentText;
+
+      commentElement.appendChild(commentParagraph);
+      commentsContainer.appendChild(commentElement);
+
+      commentInput.value = '';
+    }
+  </script>
+</body>
+</html>
