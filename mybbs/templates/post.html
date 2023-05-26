@@ -96,6 +96,15 @@
       <hr>
       <p>{{ body|linebreaks }}</p>
     </div>
+    <form action="#" method="post">
+    {% csrf_token %}
+    {% if favorite %}
+    <span><button type="submit" name="action" value="cancel_favorite">取消收藏</button></span>
+    {% else %}
+    <span><button type="submit" name="action" value="favorite">收藏</button></span>
+    {% endif %}
+    </form>
+
     <!-- <div class="comments">
       <div class="comment">
         <p>Comment 1</p>
@@ -113,7 +122,7 @@
     &copy; 2023 mybbs. All rights reserved.
   </footer>
 
-  <script>
+  <!-- <script>
     function submitComment() {
       var commentInput = document.getElementById('comment-input');
       var commentText = commentInput.value;
@@ -129,6 +138,6 @@
 
       commentInput.value = '';
     }
-  </script>
+  </script> -->
 </body>
 </html>

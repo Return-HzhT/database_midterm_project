@@ -4,6 +4,39 @@
   <meta charset="UTF-8">
   <title>User Profile</title>
   <style>
+    nav {
+      background-color: #ffffff;
+      padding: 10px;
+      display: flex;
+      justify-content: center; /* 水平居中 */
+    }
+    
+    ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+    }
+    
+    li {
+      margin-right: 10px;
+      display: inline; /* 水平显示 */
+    }
+    
+    li:last-child {
+      margin-right: 0;
+    }
+    
+    li a {
+      color: #fff;
+      text-decoration: none;
+      padding: 5px;
+      background-color: rgb(0, 0, 0);
+    }
+    
+    li a:hover {
+      background-color: #0366d6;
+    }
+
     body {
       font-family: Arial, sans-serif;
       margin: 0;
@@ -75,12 +108,25 @@
       padding: 20px;
       text-align: center;
     }
+
+    button:hover {
+      background-color: #0366d6;
+    }
+
   </style>
 </head>
 <body>
   <header>
     <h1>User Home Page</h1>
   </header>
+  <nav>
+    <ul>
+      <form>
+      <li><a href="/follow/{{ my_id }}">My Following Bloggers</a></li>
+      <li><a href="/favorite/{{ my_id }}">My Favorite Posts</a></li>
+      </form>
+    </ul>
+  </nav>
   <main>
     <hr>
     <div id="user-posts">
@@ -92,6 +138,7 @@
         <h2>{{ post.title }}</h2>
         <p>{{ post.body|truncatewords:"1" }}</p>
         <button type="submit" name="action" value="view_details">View Details</button>
+        <button type="submit" name="action" value="delete">Delete</button>
         </form>
     </article>
     <hr>
@@ -107,6 +154,7 @@
       <button type="submit" name="action" value="new_post">Posting New Post</button>
       </form>
     </div>
+    <br>
     <hr>
 
     <div class="form">

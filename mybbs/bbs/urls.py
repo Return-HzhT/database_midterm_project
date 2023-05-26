@@ -7,4 +7,5 @@ urlpatterns = [
     path("posts/",views.posts),
     path("login/",views.login),
     re_path(r"^user_home/(?P<user_id>\d{1,10})/$",views.user_home),
+    re_path(r"^favorite/(?P<user_id>\d{1,10})/$",views.favorite),
 ]
