@@ -111,12 +111,27 @@
       cursor: pointer;
     }
 
+    span button, form button,article button {
+      padding: 10px 20px;
+      background-color: #333;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+
     footer {
       background-color: #333;
       color: #fff;
       padding: 20px;
       text-align: center;
     }
+
+    .span-stats {
+      display: flex;
+      justify-content: space-between;
+      color: #888;
+    }
+
   </style>
 </head>
 <body>
@@ -135,52 +150,61 @@
   </nav>
   <main>
     <div class="post">
-      <h2>{{ title }}</h2>
-      <hr>
+      <h2>第0层：{{ title }}</h2>
       <p>{{ body|linebreaks }}</p>
-    </div>
-    <form action="#" method="post">
-    {% csrf_token %}
-    {% if favorite %}
-    <span><button type="submit" name="action" value="cancel_favorite">取消收藏</button></span>
-    {% else %}
-    <span><button type="submit" name="action" value="favorite">收藏</button></span>
-    {% endif %}
-    </form>
+      <hr>
+      <span class="span-stats">
+      <form action="#" method="post">
+        {% csrf_token %}
+        {% if favorite %}
+        <button type="submit" name="action" value="cancel_favorite">取消收藏</button>
+        {% else %}
+        <button type="submit" name="action" value="favorite">收藏</button>
+        {% endif %}
+      </form>
+      <button onclick="displayComment(0)">评论</button>
+      </span>
 
-    <!-- <div class="comments">
-      <div class="comment">
-        <p>Comment 1</p>
-      </div>
-      <div class="comment">
-        <p>Comment 2</p>
-      </div>
-    </div> -->
-    <!-- <div class="form">
-      <textarea id="comment-input" placeholder="Enter your comment"></textarea>
-      <button onclick="submitComment()">Submit</button>
-    </div> -->
+    </div>
+
+    <div class="comments">
+    {% for comment in comments %}
+    <article>
+        <h4>第{{ comment.now_floor }}层：<span style="color:#d60303">{{ comment.speaker.user_name }}</span> 评论第{{ comment.to_floor }}层：</h4>
+        <p>{{ comment.body }}</p>
+        <button onclick="displayComment({{ comment.now_floor }})">评论</button>
+    </article>
+    <hr>
+    {% endfor %}
+    </div>
+    
+    <div id="comment-zone" class="form" hidden="hidden">
+      <form action="#" method="post">
+      {% csrf_token %}
+      <input id="target_floor" name="target_floor" value="0" hidden="hidden">
+      <p id="target-floor"></p>
+      <textarea id="comment-input" name="body" placeholder="Enter your comment"></textarea>
+      <button type="submit" onclick="hideComment()" name="action" value="comment">发表评论</button>
+      </form>
+    </div>
   </main>
   <footer>
     &copy; 2023 mybbs. All rights reserved.
   </footer>
 
-  <!-- <script>
-    function submitComment() {
-      var commentInput = document.getElementById('comment-input');
-      var commentText = commentInput.value;
-      var commentsContainer = document.querySelector('.comments');
-
-      var commentElement = document.createElement('div');
-      commentElement.classList.add('comment');
-      var commentParagraph = document.createElement('p');
-      commentParagraph.textContent = commentText;
-
-      commentElement.appendChild(commentParagraph);
-      commentsContainer.appendChild(commentElement);
-
-      commentInput.value = '';
+  <script>
+    function displayComment(target_floor) {
+      var target_div=document.getElementById("comment-zone");
+      target_div.hidden=false;
+      var comment_target_floor_p = document.getElementById('target_floor');
+      comment_target_floor_p.innerHTML="回复第"+target_floor+"层";
+      comment_target_floor_p.getAttributeNode("value").value=target_floor.toString();
     }
-  </script> -->
+
+    function hideComment() {
+      var target_div=document.getElementById("comment-zone");
+      target_div.hidden=true;
+    }
+  </script>
 </body>
 </html>

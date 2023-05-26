@@ -9,13 +9,24 @@ def post(request,post_id):
         if request.POST['action']=='favorite':
             now_user=User.objects.get(id=user_id)
             now_post=Post.objects.get(id=post_id)
+            now_post.increase_favorites()
             favorite=Favorite(user=now_user,post=now_post)
             favorite.save()
             # return HttpResponse("收藏成功！")
         elif request.POST['action']=='cancel_favorite':
+            now_post=Post.objects.get(id=post_id)
+            now_post.decrease_favorites()
             favorite=Favorite.objects.filter(user=user_id).get(post=post_id)
             favorite.delete()
             # return HttpResponse("已取消收藏！")
+        elif request.POST['action']=='comment':
+            now_user=User.objects.get(id=user_id)
+            now_post=Post.objects.get(id=post_id)
+            now_post.increase_comments()
+            new_floor=now_post.comments
+            new_comment_body=request.POST['body']
+            comment=Comment(speaker=now_user,post=now_post,body=new_comment_body,now_floor=new_floor,to_floor=int(request.POST['target_floor']))
+            comment.save()
     context={}
     context['title']=Post.objects.get(id=post_id).title
     context['body']=Post.objects.get(id=post_id).body
@@ -24,13 +35,18 @@ def post(request,post_id):
         context['favorite']=False
     else:
         context['favorite']=True
+    context['comments']=Comment.objects.filter(post=post_id).order_by("now_floor")
+
     context['my_id']=int(request.session['bbs_user_id'])
     return render(request,"post.html",context)
 
 def posts(request):
     if request.method=='POST' and request.POST:
-        now_post_id=request.POST['id']
-        return HttpResponseRedirect("/post/"+now_post_id)
+        if request.POST['action']=='view_details':
+            now_post_id=request.POST['id']
+            post=Post.objects.get(id=now_post_id)
+            post.increase_views()
+            return HttpResponseRedirect("/post/"+now_post_id)
     context={}
     context['my_id']=int(request.session['bbs_user_id'])
     context['posts']=Post.objects.all()
@@ -69,6 +85,8 @@ def user_home(request,user_id):
     if request.method=='POST' and request.POST:
         if request.POST['action']=='view_details':
             now_post_id=request.POST['id']
+            post=Post.objects.get(id=now_post_id)
+            post.increase_views()
             return HttpResponseRedirect("/post/"+now_post_id)
         # elif request.POST['action']=='new_post':
         #     new_post_title=request.POST['post-title']
@@ -90,7 +108,7 @@ def user_home(request,user_id):
         #     now_post.delete()
     user_id=int(user_id)
     context={}
-    context['my_id']=user_id
+    context['my_id']=now_user
     context['my_posts']=Post.objects.filter(author=user_id)
     follow=Follow.objects.filter(follower_user=now_user).filter(followed_user=target_user)
     if follow.count()==0:
@@ -104,6 +122,8 @@ def my_home(request):
     if request.method=='POST' and request.POST:
         if request.POST['action']=='view_details':
             now_post_id=request.POST['id']
+            post=Post.objects.get(id=now_post_id)
+            post.increase_views()
             return HttpResponseRedirect("/post/"+now_post_id)
         elif request.POST['action']=='new_post':
             new_post_title=request.POST['post-title']
@@ -124,6 +144,8 @@ def favorite(request,user_id):
     if request.method=='POST' and request.POST:
         if request.POST['action']=='view_details':
             now_post_id=request.POST['id']
+            post=Post.objects.get(id=now_post_id)
+            post.increase_views()
             return HttpResponseRedirect("/post/"+now_post_id)
     user_id=int(user_id)
     context={}
