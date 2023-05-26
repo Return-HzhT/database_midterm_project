@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Post Page</title>
+  <title>User Profile</title>
   <style>
     nav {
       background-color: #ffffff;
@@ -10,7 +10,7 @@
       display: flex;
       justify-content: center;
     }
-
+    
     ul {
       list-style-type: none;
       margin: 0;
@@ -76,23 +76,6 @@
       line-height: 1.5;
     }
 
-    .comments {
-      margin-top: 20px;
-      padding-top: 20px;
-      border-top: 1px solid #ddd;
-    }
-
-    .comment {
-      margin-bottom: 10px;
-      padding: 10px;
-      background-color: #f4f4f4;
-      border: 1px solid #ddd;
-    }
-
-    .comment p {
-      margin: 0;
-    }
-
     .form {
       margin-top: 20px;
     }
@@ -111,17 +94,30 @@
       cursor: pointer;
     }
 
+    form button {
+      padding: 10px 20px;
+      background-color: #333;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+    
     footer {
       background-color: #333;
       color: #fff;
       padding: 20px;
       text-align: center;
     }
+
+    button:hover {
+      background-color: #0366d6;
+    }
+
   </style>
 </head>
 <body>
   <header>
-    <h1>Post Page</h1>
+    <h1>Follow Page</h1>
   </header>
   <nav>
     <ul>
@@ -134,53 +130,24 @@
     </ul>
   </nav>
   <main>
-    <div class="post">
-      <h2>{{ title }}</h2>
-      <hr>
-      <p>{{ body|linebreaks }}</p>
+    
+    <hr>
+    <div id="user-posts">
+    {% for followed_user in followed_users %}
+    <article>
+        <form action="#" method="post">
+        {% csrf_token %}
+        <input name="followed_id" value="{{ followed_user.id }}" type="hidden">
+        <h2>用户名：{{ followed_user.user_name }}</h2>
+        <button type="submit" name="action" value="view_details">View User Page</button>
+        </form>
+    </article>
+    <hr>
+    {% endfor %}
     </div>
-    <form action="#" method="post">
-    {% csrf_token %}
-    {% if favorite %}
-    <span><button type="submit" name="action" value="cancel_favorite">取消收藏</button></span>
-    {% else %}
-    <span><button type="submit" name="action" value="favorite">收藏</button></span>
-    {% endif %}
-    </form>
-
-    <!-- <div class="comments">
-      <div class="comment">
-        <p>Comment 1</p>
-      </div>
-      <div class="comment">
-        <p>Comment 2</p>
-      </div>
-    </div> -->
-    <!-- <div class="form">
-      <textarea id="comment-input" placeholder="Enter your comment"></textarea>
-      <button onclick="submitComment()">Submit</button>
-    </div> -->
   </main>
   <footer>
     &copy; 2023 mybbs. All rights reserved.
   </footer>
-
-  <!-- <script>
-    function submitComment() {
-      var commentInput = document.getElementById('comment-input');
-      var commentText = commentInput.value;
-      var commentsContainer = document.querySelector('.comments');
-
-      var commentElement = document.createElement('div');
-      commentElement.classList.add('comment');
-      var commentParagraph = document.createElement('p');
-      commentParagraph.textContent = commentText;
-
-      commentElement.appendChild(commentParagraph);
-      commentsContainer.appendChild(commentElement);
-
-      commentInput.value = '';
-    }
-  </script> -->
 </body>
 </html>

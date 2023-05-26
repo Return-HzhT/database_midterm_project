@@ -12,20 +12,25 @@ class Post(models.Model):
     modified_time = models.DateTimeField(auto_now=True)
     author = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     views = models.PositiveIntegerField(default=0)
-    likes = models.PositiveIntegerField(default=0)
+    favorites = models.PositiveIntegerField(default=0)
     comment_sum = models.PositiveIntegerField(default=0)
 
     def increase_views(self):
         self.views += 1
         self.save(update_fields=['views'])
 
+    def increase_favorites(self):
+        self.favorites += 1
+        self.save(update_fields=['favorites'])
+
 class Comment(models.Model):
     speaker = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     post = models.ForeignKey(Post, on_delete=models.DO_NOTHING)
+    floor = models.IntegerField(default=0)
 
 class Follow(models.Model):
-    Follower_user = models.PositiveIntegerField()
-    Followed_user = models.PositiveIntegerField()
+    follower_user = models.PositiveIntegerField()
+    followed_user = models.PositiveIntegerField()
 
 class Favorite(models.Model):
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
