@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Post Page</title>
+  <title>User Profile</title>
   <style>
     nav {
       background-color: #ffffff;
@@ -10,7 +10,7 @@
       display: flex;
       justify-content: center;
     }
-
+    
     ul {
       list-style-type: none;
       margin: 0;
@@ -76,23 +76,6 @@
       line-height: 1.5;
     }
 
-    .comments {
-      margin-top: 20px;
-      padding-top: 20px;
-      border-top: 1px solid #ddd;
-    }
-
-    .comment {
-      margin-bottom: 10px;
-      padding: 10px;
-      background-color: #f4f4f4;
-      border: 1px solid #ddd;
-    }
-
-    .comment p {
-      margin: 0;
-    }
-
     .form {
       margin-top: 20px;
     }
@@ -111,14 +94,14 @@
       cursor: pointer;
     }
 
-    span button, form button,article button {
+    form button {
       padding: 10px 20px;
       background-color: #333;
       color: #fff;
       border: none;
       cursor: pointer;
     }
-
+    
     footer {
       background-color: #333;
       color: #fff;
@@ -126,17 +109,15 @@
       text-align: center;
     }
 
-    .span-stats {
-      display: flex;
-      justify-content: space-between;
-      color: #888;
+    button:hover {
+      background-color: #0366d6;
     }
 
   </style>
 </head>
 <body>
   <header>
-    <h1>Post Page</h1>
+    <h1>My Home Page</h1>
   </header>
   <nav>
     <ul>
@@ -149,62 +130,45 @@
     </ul>
   </nav>
   <main>
-    <div class="post">
-      <h2>第0层：{{ title }}</h2>
-      <p>{{ body|linebreaks }}</p>
-      <hr>
-      <span class="span-stats">
-      <form action="#" method="post">
-        {% csrf_token %}
-        {% if favorite %}
-        <button type="submit" name="action" value="cancel_favorite">取消收藏</button>
-        {% else %}
-        <button type="submit" name="action" value="favorite">收藏</button>
-        {% endif %}
-      </form>
-      <button onclick="displayComment(0)">评论</button>
-      </span>
-
-    </div>
-
-    <div class="comments">
-    {% for comment in comments %}
+    <hr>
+    <div id="user-posts">
+    {% for post in my_posts %}
     <article>
-        <h4>第{{ comment.now_floor }}层：<span style="color:#d60303">{{ comment.speaker.user_name }}</span> 评论第{{ comment.to_floor }}层：</h4>
-        <p>{{ comment.body }}</p>
-        <button onclick="displayComment({{ comment.now_floor }})">评论</button>
+        <form action="#" method="post">
+        {% csrf_token %}
+        <input name="id" value="{{ post.id }}" type="hidden">
+        <h2>{{ post.title }}</h2>
+        <p>{{ post.body|truncatewords:"1" }}</p>
+        <button type="submit" name="action" value="view_details">View Details</button>
+        <button type="submit" name="action" value="delete">Delete</button>
+        </form>
     </article>
     <hr>
     {% endfor %}
     </div>
-    
-    <div id="comment-zone" class="form" hidden="hidden">
+
+    <h2>New Post</h2>
+    <div class="form">
       <form action="#" method="post">
       {% csrf_token %}
-      <input id="target_floor" name="target_floor" value="0" hidden="hidden">
-      <p id="target-floor"></p>
-      <textarea id="comment-input" name="body" placeholder="Enter your comment"></textarea>
-      <button type="submit" onclick="hideComment()" name="action" value="comment">发表评论</button>
+      <textarea name="post-title" placeholder="Enter your new post title"></textarea>
+      <textarea name="post-content" placeholder="Enter your new post body"></textarea>
+      <button type="submit" name="action" value="new_post">Posting New Post</button>
       </form>
     </div>
+    <br>
+    <hr>
+
+    <!-- <div class="form">
+      <form action="#" method="post">
+      {% csrf_token %}
+      <button type="submit" name="action" value="view_all_posts">View all posts</button>
+      </form>
+    </div>
+    <div id="all-posts"></div> -->
   </main>
   <footer>
     &copy; 2023 mybbs. All rights reserved.
   </footer>
-
-  <script>
-    function displayComment(target_floor) {
-      var target_div=document.getElementById("comment-zone");
-      target_div.hidden=false;
-      var comment_target_floor_p = document.getElementById('target_floor');
-      comment_target_floor_p.innerHTML="回复第"+target_floor+"层";
-      comment_target_floor_p.getAttributeNode("value").value=target_floor.toString();
-    }
-
-    function hideComment() {
-      var target_div=document.getElementById("comment-zone");
-      target_div.hidden=true;
-    }
-  </script>
 </body>
 </html>

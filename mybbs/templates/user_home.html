@@ -8,7 +8,7 @@
       background-color: #ffffff;
       padding: 10px;
       display: flex;
-      justify-content: center; /* 水平居中 */
+      justify-content: center;
     }
     
     ul {
@@ -19,7 +19,7 @@
     
     li {
       margin-right: 10px;
-      display: inline; /* 水平显示 */
+      display: inline;
     }
     
     li:last-child {
@@ -122,12 +122,23 @@
   <nav>
     <ul>
       <form>
+      <li><a href="/my_home">My Home</a></li>
       <li><a href="/follow/{{ my_id }}">My Following Bloggers</a></li>
       <li><a href="/favorite/{{ my_id }}">My Favorite Posts</a></li>
+      <li><a href="/posts">View All Posts</a></li>
       </form>
     </ul>
   </nav>
   <main>
+    <form action="#" method="post">
+      {% csrf_token %}
+      {% if follow %}
+      <span><button type="submit" name="action" value="cancel_follow">取消关注</button></span>
+      {% else %}
+      <span><button type="submit" name="action" value="follow">关注该用户</button></span>
+      {% endif %}
+    </form>    
+    
     <hr>
     <div id="user-posts">
     {% for post in my_posts %}
@@ -138,14 +149,14 @@
         <h2>{{ post.title }}</h2>
         <p>{{ post.body|truncatewords:"1" }}</p>
         <button type="submit" name="action" value="view_details">View Details</button>
-        <button type="submit" name="action" value="delete">Delete</button>
+        <!-- <button type="submit" name="action" value="delete">Delete</button> -->
         </form>
     </article>
     <hr>
     {% endfor %}
     </div>
 
-    <h2>New Post</h2>
+    <!-- <h2>New Post</h2>
     <div class="form">
       <form action="#" method="post">
       {% csrf_token %}
@@ -155,15 +166,15 @@
       </form>
     </div>
     <br>
-    <hr>
+    <hr> -->
 
-    <div class="form">
+    <!-- <div class="form">
       <form action="#" method="post">
       {% csrf_token %}
       <button type="submit" name="action" value="view_all_posts">View all posts</button>
       </form>
     </div>
-    <div id="all-posts"></div>
+    <div id="all-posts"></div> -->
   </main>
   <footer>
     &copy; 2023 mybbs. All rights reserved.

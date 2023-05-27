@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Posts Page</title>
+  <title>User Profile</title>
   <style>
     nav {
       background-color: #ffffff;
@@ -10,7 +10,7 @@
       display: flex;
       justify-content: center;
     }
-
+    
     ul {
       list-style-type: none;
       margin: 0;
@@ -61,18 +61,37 @@
       background-color: #f4f4f4;
     }
 
-    article {
+    .post {
       margin-bottom: 20px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid #ddd;
+      padding: 20px;
+      background-color: #fff;
+      border: 1px solid #ddd;
     }
 
-    h2 {
+    .post h2 {
       margin-top: 0;
     }
 
-    p {
+    .post p {
       line-height: 1.5;
+    }
+
+    .form {
+      margin-top: 20px;
+    }
+
+    .form textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+
+    .form button {
+      padding: 10px 20px;
+      background-color: #333;
+      color: #fff;
+      border: none;
+      cursor: pointer;
     }
 
     form button {
@@ -82,7 +101,7 @@
       border: none;
       cursor: pointer;
     }
-
+    
     footer {
       background-color: #333;
       color: #fff;
@@ -90,16 +109,15 @@
       text-align: center;
     }
 
-    .post-stats {
-      display: flex;
-      justify-content: space-between;
-      color: #888;
+    button:hover {
+      background-color: #0366d6;
     }
+
   </style>
 </head>
 <body>
   <header>
-    <h1>Favorite Page</h1>
+    <h1>Follow Page</h1>
   </header>
   <nav>
     <ul>
@@ -112,25 +130,21 @@
     </ul>
   </nav>
   <main>
-    {% for post in posts %}
+    
+    <hr>
+    <div id="user-posts">
+    {% for followed_user in followed_users %}
     <article>
-      <form action="#" method="post">
-      {% csrf_token %}
-        <input name="id" value="{{ post.id }}" type="hidden">
-        <h2>{{ post.title }}</h2>
-        <h3>作者:{{ post.author.user_name }}</h3>
-        <p>{{ post.body|truncatewords:"1" }}</p>
-        <div class="post-stats">
-          <span class="post-stat">发布时间:{{ post.created_time }}</span>
-          <span class="post-stat">收藏数:{{ post.favorites }}</span>
-          <span class="post-stat">观看数:{{ post.views }}</span>
-          <span class="post-stat">评论数:{{ post.comment_sum }}</span>
-        </div>
-        <br>
-        <button type="submit" name="action" value="view_details">View Details</button>
-      </form>
+        <form action="#" method="post">
+        {% csrf_token %}
+        <input name="followed_id" value="{{ followed_user.id }}" type="hidden">
+        <h2>用户名：{{ followed_user.user_name }}</h2>
+        <button type="submit" name="action" value="view_details">View User Page</button>
+        </form>
     </article>
+    <hr>
     {% endfor %}
+    </div>
   </main>
   <footer>
     &copy; 2023 mybbs. All rights reserved.
