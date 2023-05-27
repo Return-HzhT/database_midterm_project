@@ -1,8 +1,12 @@
 from django.shortcuts import render
 from django.http import HttpResponse,HttpResponseRedirect
+from django.db import transaction
 from bbs.models import *
 # Create your views here.
+@transaction.atomic
 def post(request,post_id):
+    if request.session.get("bbs_user_id",None) is None:
+        return HttpResponseRedirect("/login")
     user_id=int(request.session['bbs_user_id'])
     post_id=int(post_id)
     if request.method=='POST' and request.POST:
@@ -27,10 +31,16 @@ def post(request,post_id):
             new_comment_body=request.POST['body']
             comment=Comment(speaker=now_user,post=now_post,body=new_comment_body,now_floor=new_floor,to_floor=int(request.POST['target_floor']))
             comment.save()
+        elif request.POST['action']=='logout':
+            request.session.flush()
+            return HttpResponseRedirect("/login")
     context={}
-    context['title']=Post.objects.get(id=post_id).title
-    context['body']=Post.objects.get(id=post_id).body
+    now_post=Post.objects.get(id=post_id)
+    context['title']=now_post.title
+    context['body']=now_post.body
+    context['author']=now_post.author.user_name
     favorite=Favorite.objects.filter(user=user_id).filter(post=post_id)
+    print(favorite.query)
     if favorite.count()==0:
         context['favorite']=False
     else:
@@ -38,18 +48,31 @@ def post(request,post_id):
     context['comments']=Comment.objects.filter(post=post_id).order_by("now_floor")
 
     context['my_id']=int(request.session['bbs_user_id'])
+    context['my_name']=User.objects.get(id=int(request.session['bbs_user_id'])).user_name
+
+    from django.db import connection
+    #2、在python文件中打印
+    print(connection.queries)
     return render(request,"post.html",context)
 
 def posts(request):
+    if request.session.get("bbs_user_id",None) is None:
+        return HttpResponseRedirect("/login")
     if request.method=='POST' and request.POST:
         if request.POST['action']=='view_details':
             now_post_id=request.POST['id']
             post=Post.objects.get(id=now_post_id)
             post.increase_views()
-            return HttpResponseRedirect("/post/"+now_post_id)
+            context={}
+            context['my_name']=User.objects.get(id=int(request.session['bbs_user_id'])).user_name
+            return HttpResponseRedirect("/post/"+now_post_id,context)
+        elif request.POST['action']=='logout':
+            request.session.flush()
+            return HttpResponseRedirect("/login")
     context={}
     context['my_id']=int(request.session['bbs_user_id'])
     context['posts']=Post.objects.all()
+    context['my_name']=User.objects.get(id=int(request.session['bbs_user_id'])).user_name
     return render(request,"posts.html",context)
 
 def login(request):
@@ -62,7 +85,9 @@ def login(request):
                 user_id=user.id
                 if user.password==now_password:
                     request.session['bbs_user_id']=user_id
-                    return HttpResponseRedirect("/posts/")
+                    context={}
+                    context['my_name']=User.objects.get(id=int(request.session['bbs_user_id'])).user_name
+                    return HttpResponseRedirect("/posts",context)
                 else:
                     return HttpResponse("密码错误！")
             except:
@@ -80,6 +105,8 @@ def login(request):
     return render(request,"login.html")
 
 def user_home(request,user_id):
+    if request.session.get("bbs_user_id",None) is None:
+        return HttpResponseRedirect("/login")
     now_user=int(request.session['bbs_user_id'])
     target_user=int(user_id)
     if request.method=='POST' and request.POST:
@@ -87,13 +114,9 @@ def user_home(request,user_id):
             now_post_id=request.POST['id']
             post=Post.objects.get(id=now_post_id)
             post.increase_views()
-            return HttpResponseRedirect("/post/"+now_post_id)
-        # elif request.POST['action']=='new_post':
-        #     new_post_title=request.POST['post-title']
-        #     new_post_content=request.POST['post-content']
-        #     author_user=User.objects.get(id=user_id)
-        #     new_post = Post(title=new_post_title,body=new_post_content,author=author_user)
-        #     new_post.save()
+            context={}
+            context['my_name']=User.objects.get(id=int(request.session['bbs_user_id'])).user_name
+            return HttpResponseRedirect("/post/"+now_post_id,context)
         if request.POST['action']=='follow':
             follow=Follow(follower_user=now_user,followed_user=target_user)
             follow.save()
@@ -102,6 +125,9 @@ def user_home(request,user_id):
             follow=Follow.objects.filter(follower_user=now_user).filter(followed_user=target_user)
             follow.delete()
             # return HttpResponse("已取消关注！")
+        elif request.POST['action']=='logout':
+            request.session.flush()
+            return HttpResponseRedirect("/login")
         # elif request.POST['action']=='delete':
         #     now_post_id=int(request.POST['id'])
         #     now_post=Post.objects.get(id=now_post_id)
@@ -115,16 +141,21 @@ def user_home(request,user_id):
         context['follow']=False
     else:
         context['follow']=True
+    context['my_name']=User.objects.get(id=int(request.session['bbs_user_id'])).user_name
     return render(request,"user_home.html",context)
 
 def my_home(request):
+    if request.session.get("bbs_user_id",None) is None:
+        return HttpResponseRedirect("/login")
     my_id=int(request.session['bbs_user_id'])
     if request.method=='POST' and request.POST:
         if request.POST['action']=='view_details':
             now_post_id=request.POST['id']
             post=Post.objects.get(id=now_post_id)
             post.increase_views()
-            return HttpResponseRedirect("/post/"+now_post_id)
+            context={}
+            context['my_name']=User.objects.get(id=int(request.session['bbs_user_id'])).user_name
+            return HttpResponseRedirect("/post/"+now_post_id,context)
         elif request.POST['action']=='new_post':
             new_post_title=request.POST['post-title']
             new_post_content=request.POST['post-content']
@@ -135,18 +166,30 @@ def my_home(request):
             now_post_id=int(request.POST['id'])
             now_post=Post.objects.get(id=now_post_id)
             now_post.delete()
+        elif request.POST['action']=='logout':
+            request.session.flush()
+            return HttpResponseRedirect("/login")
     context={}
     context['my_id']=my_id
     context['my_posts']=Post.objects.filter(author=my_id)
+    context['my_name']=User.objects.get(id=int(request.session['bbs_user_id'])).user_name
     return render(request,"my_home.html",context)
 
 def favorite(request,user_id):
+    if request.session.get("bbs_user_id",None) is None:
+        return HttpResponseRedirect("/login")
     if request.method=='POST' and request.POST:
+        print(request.POST)
         if request.POST['action']=='view_details':
             now_post_id=request.POST['id']
             post=Post.objects.get(id=now_post_id)
             post.increase_views()
-            return HttpResponseRedirect("/post/"+now_post_id)
+            context={}
+            context['my_name']=User.objects.get(id=int(request.session['bbs_user_id'])).user_name
+            return HttpResponseRedirect("/post/"+now_post_id,context)
+        elif request.POST['action']=='logout':
+            request.session.flush()
+            return HttpResponseRedirect("/login")
     user_id=int(user_id)
     context={}
     favorite_list=list(Favorite.objects.filter(user=user_id).values_list("post",flat=True))
@@ -156,13 +199,21 @@ def favorite(request,user_id):
     for post_id in favorite_list:
         context['posts'].append(Post.objects.get(id=post_id))
     context['my_id']=int(request.session['bbs_user_id'])
+    context['my_name']=User.objects.get(id=int(request.session['bbs_user_id'])).user_name
     return render(request,"favorite.html",context)
 
 def follow(request,user_id):
+    if request.session.get("bbs_user_id",None) is None:
+        return HttpResponseRedirect("/login")
     if request.method=='POST' and request.POST:
         if request.POST['action']=='view_details':
             target_id=request.POST['followed_id']
-            return HttpResponseRedirect("/user_home/"+target_id)
+            context={}
+            context['my_name']=User.objects.get(id=int(request.session['bbs_user_id'])).user_name
+            return HttpResponseRedirect("/user_home/"+target_id,context)
+        elif request.POST['action']=='logout':
+            request.session.flush()
+            return HttpResponseRedirect("/login")
     user_id=int(user_id)
     context={}
     follow_list=list(Follow.objects.filter(follower_user=user_id).values_list("followed_user",flat=True))
@@ -172,4 +223,5 @@ def follow(request,user_id):
     for target_id in follow_list:
         context['followed_users'].append(User.objects.get(id=target_id))
     context['my_id']=int(request.session['bbs_user_id'])
+    context['my_name']=User.objects.get(id=int(request.session['bbs_user_id'])).user_name
     return render(request,"follow.html",context)   

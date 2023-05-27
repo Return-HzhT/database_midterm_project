@@ -104,6 +104,8 @@
   <nav>
     <ul>
       <form>
+      <li>当前用户：{{ my_name }}</li>
+      <li><a href="javascript:;" onclick="logout()">Logout</a></li>
       <li><a href="/my_home">My Home</a></li>
       <li><a href="/follow/{{ my_id }}">My Following Bloggers</a></li>
       <li><a href="/favorite/{{ my_id }}">My Favorite Posts</a></li>
@@ -112,28 +114,51 @@
     </ul>
   </nav>
   <main>
+    <hr>
     {% for post in posts %}
     <article>
       <form action="#" method="post">
       {% csrf_token %}
         <input name="id" value="{{ post.id }}" type="hidden">
         <h2>{{ post.title }}</h2>
-        <h3>作者:{{ post.author.user_name }}</h3>
+        <a href="\user_home\{{ post.author.id }}">作者：{{ post.author.user_name }}</a>
         <p>{{ post.body|truncatewords:"1" }}</p>
         <div class="post-stats">
           <span class="post-stat">发布时间:{{ post.created_time }}</span>
           <span class="post-stat">收藏数:{{ post.favorites }}</span>
           <span class="post-stat">观看数:{{ post.views }}</span>
-          <span class="post-stat">评论数:{{ post.comment_sum }}</span>
+          <span class="post-stat">评论数:{{ post.comments }}</span>
         </div>
         <br>
         <button type="submit" name="action" value="view_details">View Details</button>
       </form>
     </article>
+    {% empty %}
     {% endfor %}
   </main>
   <footer>
     &copy; 2023 mybbs. All rights reserved.
   </footer>
+  <script>
+    function logout() {
+      var temp = document.createElement("form");
+      temp.action = "#";
+      temp.method = "post";
+      temp.style.display = "none";
+ 
+      var opt1 = document.createElement("textarea");
+      opt1.name = "action";
+      opt1.value = "logout";
+      temp.appendChild(opt1);
+
+      var opt2 = document.createElement("textarea");
+      opt2.name = "csrfmiddlewaretoken";
+      opt2.value = document.querySelector('[name=csrfmiddlewaretoken]').value;
+      temp.appendChild(opt2);
+      
+      document.body.appendChild(temp);
+      temp.submit();
+    }
+  </script>
 </body>
 </html>

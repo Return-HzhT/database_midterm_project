@@ -147,6 +147,21 @@
       usernameInput.value = '';
       passwordInput.value = '';
     }
+
+    function logout() {
+      var temp = document.createElement("form");
+      temp.action = "#";
+      temp.method = "post";
+      temp.style.display = "none";
+ 
+      var opt = document.createElement("textarea");
+      opt.name = "action";
+      opt.value = "logout";
+      temp.appendChild(opt);
+      
+      document.body.appendChild(temp);
+      temp.submit();
+    }
   </script>
 </body>
 </html>

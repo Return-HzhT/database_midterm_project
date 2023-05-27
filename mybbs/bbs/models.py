@@ -10,7 +10,7 @@ class Post(models.Model):
     body = models.TextField()
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
-    author = models.ForeignKey(User, on_delete=models.DO_NOTHING,db_index=True)
+    author = models.ForeignKey(User, on_delete=models.CASCADE, db_index=True)
     views = models.PositiveIntegerField(default=0)
     favorites = models.PositiveIntegerField(default=0)
     comments= models.PositiveIntegerField(default=0)
@@ -34,16 +34,16 @@ class Post(models.Model):
         self.save(update_fields=['favorites'])
 
 class Comment(models.Model):
-    speaker = models.ForeignKey(User, on_delete=models.DO_NOTHING)
-    post = models.ForeignKey(Post, on_delete=models.DO_NOTHING)
+    speaker = models.ForeignKey(User, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, db_index=True)
     body = models.TextField()
     now_floor = models.PositiveIntegerField(default=0)
     to_floor = models.PositiveIntegerField(default=0)
 
 class Follow(models.Model):
-    follower_user = models.PositiveIntegerField(default=0)
+    follower_user = models.PositiveIntegerField(default=0, db_index=True)
     followed_user = models.PositiveIntegerField(default=0)
 
 class Favorite(models.Model):
-    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
-    post = models.ForeignKey(Post, on_delete=models.DO_NOTHING)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, db_index=True)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)

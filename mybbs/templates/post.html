@@ -141,16 +141,20 @@
   <nav>
     <ul>
       <form>
-      <li><a href="/my_home">My Home</a></li>
-      <li><a href="/follow/{{ my_id }}">My Following Bloggers</a></li>
-      <li><a href="/favorite/{{ my_id }}">My Favorite Posts</a></li>
-      <li><a href="/posts">View All Posts</a></li>
+        <li>当前用户：{{ my_name }}</li>
+        <li><a href="javascript:;" onclick="logout()">Logout</a></li>
+        <li><a href="/my_home">My Home</a></li>
+        <li><a href="/follow/{{ my_id }}">My Following Bloggers</a></li>
+        <li><a href="/favorite/{{ my_id }}">My Favorite Posts</a></li>
+        <li><a href="/posts">View All Posts</a></li>
       </form>
     </ul>
   </nav>
   <main>
+    <hr>
     <div class="post">
       <h2>第0层：{{ title }}</h2>
+      <h4>{{ author }}<h4>
       <p>{{ body|linebreaks }}</p>
       <hr>
       <span class="span-stats">
@@ -175,6 +179,7 @@
         <button onclick="displayComment({{ comment.now_floor }})">评论</button>
     </article>
     <hr>
+    {% empty %}
     {% endfor %}
     </div>
     
@@ -183,7 +188,7 @@
       {% csrf_token %}
       <input id="target_floor" name="target_floor" value="0" hidden="hidden">
       <p id="target-floor"></p>
-      <textarea id="comment-input" name="body" placeholder="Enter your comment"></textarea>
+      <textarea id="comment-input" name="body" placeholder="Enter your comment" required></textarea>
       <button type="submit" onclick="hideComment()" name="action" value="comment">发表评论</button>
       </form>
     </div>
@@ -196,14 +201,35 @@
     function displayComment(target_floor) {
       var target_div=document.getElementById("comment-zone");
       target_div.hidden=false;
-      var comment_target_floor_p = document.getElementById('target_floor');
+      var comment_target_floor_p = document.getElementById('target-floor');
       comment_target_floor_p.innerHTML="回复第"+target_floor+"层";
-      comment_target_floor_p.getAttributeNode("value").value=target_floor.toString();
+      var comment_target_floor_input = document.getElementById('target_floor');
+      comment_target_floor_input.getAttributeNode("value").value=target_floor.toString();
     }
 
     function hideComment() {
       var target_div=document.getElementById("comment-zone");
       target_div.hidden=true;
+    }
+
+    function logout() {
+      var temp = document.createElement("form");
+      temp.action = "#";
+      temp.method = "post";
+      temp.style.display = "none";
+ 
+      var opt1 = document.createElement("textarea");
+      opt1.name = "action";
+      opt1.value = "logout";
+      temp.appendChild(opt1);
+
+      var opt2 = document.createElement("textarea");
+      opt2.name = "csrfmiddlewaretoken";
+      opt2.value = document.querySelector('[name=csrfmiddlewaretoken]').value;
+      temp.appendChild(opt2);
+      
+      document.body.appendChild(temp);
+      temp.submit();
     }
   </script>
 </body>
