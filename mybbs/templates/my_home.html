@@ -133,6 +133,7 @@
   </nav>
   <main>
     <hr>
+    {% csrf_token %}
     <div id="user-posts">
     {% for post in my_posts %}
     <article>

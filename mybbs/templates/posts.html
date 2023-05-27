@@ -115,6 +115,7 @@
   </nav>
   <main>
     <hr>
+    {% csrf_token %}
     {% for post in posts %}
     <article>
       <form action="#" method="post">

@@ -1,4 +1,5 @@
 from django.db import models
+from django.db import transaction
 
 # Create your models here.
 class User(models.Model):
@@ -15,18 +16,22 @@ class Post(models.Model):
     favorites = models.PositiveIntegerField(default=0)
     comments= models.PositiveIntegerField(default=0)
 
+    @transaction.atomic
     def increase_views(self):
         self.views += 1
         self.save(update_fields=['views'])
     
+    @transaction.atomic
     def increase_comments(self):
         self.comments += 1
         self.save(update_fields=['comments'])
 
+    @transaction.atomic
     def increase_favorites(self):
         self.favorites += 1
         self.save(update_fields=['favorites'])
 
+    @transaction.atomic
     def decrease_favorites(self):
         self.favorites -= 1
         if self.favorites<0:

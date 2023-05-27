@@ -3,7 +3,7 @@ from django.http import HttpResponse,HttpResponseRedirect
 from django.db import transaction
 from bbs.models import *
 # Create your views here.
-@transaction.atomic
+
 def post(request,post_id):
     if request.session.get("bbs_user_id",None) is None:
         return HttpResponseRedirect("/login")
@@ -14,23 +14,24 @@ def post(request,post_id):
             now_user=User.objects.get(id=user_id)
             now_post=Post.objects.get(id=post_id)
             now_post.increase_favorites()
-            favorite=Favorite(user=now_user,post=now_post)
-            favorite.save()
-            # return HttpResponse("收藏成功！")
+            with transaction.atomic():
+                favorite=Favorite(user=now_user,post=now_post)
+                favorite.save()
         elif request.POST['action']=='cancel_favorite':
             now_post=Post.objects.get(id=post_id)
             now_post.decrease_favorites()
-            favorite=Favorite.objects.filter(user=user_id).get(post=post_id)
-            favorite.delete()
-            # return HttpResponse("已取消收藏！")
+            with transaction.atomic():
+                favorite=Favorite.objects.filter(user=user_id).get(post=post_id)
+                favorite.delete()
         elif request.POST['action']=='comment':
             now_user=User.objects.get(id=user_id)
             now_post=Post.objects.get(id=post_id)
             now_post.increase_comments()
             new_floor=now_post.comments
             new_comment_body=request.POST['body']
-            comment=Comment(speaker=now_user,post=now_post,body=new_comment_body,now_floor=new_floor,to_floor=int(request.POST['target_floor']))
-            comment.save()
+            with transaction.atomic():
+                comment=Comment(speaker=now_user,post=now_post,body=new_comment_body,now_floor=new_floor,to_floor=int(request.POST['target_floor']))
+                comment.save()
         elif request.POST['action']=='logout':
             request.session.flush()
             return HttpResponseRedirect("/login")
@@ -40,7 +41,6 @@ def post(request,post_id):
     context['body']=now_post.body
     context['author']=now_post.author.user_name
     favorite=Favorite.objects.filter(user=user_id).filter(post=post_id)
-    print(favorite.query)
     if favorite.count()==0:
         context['favorite']=False
     else:
@@ -49,10 +49,6 @@ def post(request,post_id):
 
     context['my_id']=int(request.session['bbs_user_id'])
     context['my_name']=User.objects.get(id=int(request.session['bbs_user_id'])).user_name
-
-    from django.db import connection
-    #2、在python文件中打印
-    print(connection.queries)
     return render(request,"post.html",context)
 
 def posts(request):
@@ -97,8 +93,9 @@ def login(request):
             now_password=request.POST['register-password']
             user = User.objects.filter(user_name=now_user_name)
             if user.count()==0:
-                new_user=User(user_name=now_user_name,password=now_password)
-                new_user.save()
+                with transaction.atomic():
+                    new_user=User(user_name=now_user_name,password=now_password)
+                    new_user.save()
                 return HttpResponse("注册成功！")
             else:
                 return HttpResponse("用户名已存在！注册失败！")
@@ -118,20 +115,16 @@ def user_home(request,user_id):
             context['my_name']=User.objects.get(id=int(request.session['bbs_user_id'])).user_name
             return HttpResponseRedirect("/post/"+now_post_id,context)
         if request.POST['action']=='follow':
-            follow=Follow(follower_user=now_user,followed_user=target_user)
-            follow.save()
-            # return HttpResponse("关注成功！")
+            with transaction.atomic():
+                follow=Follow(follower_user=now_user,followed_user=target_user)
+                follow.save()
         elif request.POST['action']=='cancel_follow':
-            follow=Follow.objects.filter(follower_user=now_user).filter(followed_user=target_user)
-            follow.delete()
-            # return HttpResponse("已取消关注！")
+            with transaction.atomic():
+                follow=Follow.objects.filter(follower_user=now_user).filter(followed_user=target_user)
+                follow.delete()
         elif request.POST['action']=='logout':
             request.session.flush()
             return HttpResponseRedirect("/login")
-        # elif request.POST['action']=='delete':
-        #     now_post_id=int(request.POST['id'])
-        #     now_post=Post.objects.get(id=now_post_id)
-        #     now_post.delete()
     user_id=int(user_id)
     context={}
     context['my_id']=now_user
@@ -159,13 +152,15 @@ def my_home(request):
         elif request.POST['action']=='new_post':
             new_post_title=request.POST['post-title']
             new_post_content=request.POST['post-content']
-            author_user=User.objects.get(id=my_id)
-            new_post = Post(title=new_post_title,body=new_post_content,author=author_user)
-            new_post.save()
+            with transaction.atomic():
+                author_user=User.objects.get(id=my_id)
+                new_post = Post(title=new_post_title,body=new_post_content,author=author_user)
+                new_post.save()
         elif request.POST['action']=='delete':
             now_post_id=int(request.POST['id'])
-            now_post=Post.objects.get(id=now_post_id)
-            now_post.delete()
+            with transaction.atomic():
+                now_post=Post.objects.get(id=now_post_id)
+                now_post.delete()
         elif request.POST['action']=='logout':
             request.session.flush()
             return HttpResponseRedirect("/login")
@@ -179,7 +174,6 @@ def favorite(request,user_id):
     if request.session.get("bbs_user_id",None) is None:
         return HttpResponseRedirect("/login")
     if request.method=='POST' and request.POST:
-        print(request.POST)
         if request.POST['action']=='view_details':
             now_post_id=request.POST['id']
             post=Post.objects.get(id=now_post_id)

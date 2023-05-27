@@ -133,6 +133,7 @@
   </nav>
   <main>
     <hr>
+    {% csrf_token %}
     <div id="user-posts">
     {% for followed_user in followed_users %}
     <article>

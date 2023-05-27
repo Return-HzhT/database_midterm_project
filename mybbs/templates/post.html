@@ -172,6 +172,7 @@
     </div>
 
     <div class="comments">
+    {% csrf_token %}
     {% for comment in comments %}
     <article>
         <h4>第{{ comment.now_floor }}层：<span style="color:#d60303">{{ comment.speaker.user_name }}</span> 评论第{{ comment.to_floor }}层：</h4>

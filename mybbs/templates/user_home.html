@@ -144,6 +144,7 @@
     
     <hr>
     <div id="user-posts">
+    {% csrf_token %}
     {% for post in my_posts %}
     <article>
         <form action="#" method="post">
