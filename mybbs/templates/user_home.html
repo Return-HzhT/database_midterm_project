@@ -109,6 +109,12 @@
       text-align: center;
     }
 
+    .post-stats {
+      display: flex;
+      justify-content: space-between;
+      color: #888;
+    }
+
     button:hover {
       background-color: #0366d6;
     }
@@ -123,11 +129,11 @@
     <ul>
       <form>
         <li>当前用户：{{ my_name }}</li>
-        <li><a href="javascript:;" onclick="logout()">Logout</a></li>
-        <li><a href="/my_home">My Home</a></li>
-        <li><a href="/follow/{{ my_id }}">My Following Bloggers</a></li>
-        <li><a href="/favorite/{{ my_id }}">My Favorite Posts</a></li>
-        <li><a href="/posts">View All Posts</a></li>
+        <li><a href="javascript:;" onclick="logout()">登出</a></li>
+        <li><a href="/my_home">我的主页</a></li>
+        <li><a href="/follow/{{ my_id }}">我关注的用户</a></li>
+        <li><a href="/favorite/{{ my_id }}">我收藏的帖子</a></li>
+        <li><a href="/posts">查看全部帖子</a></li>
       </form>
     </ul>
   </nav>
@@ -151,8 +157,16 @@
         {% csrf_token %}
         <input name="id" value="{{ post.id }}" type="hidden">
         <h2>{{ post.title }}</h2>
+        <a href="\user_home\{{ post.author.id }}">作者：{{ post.author.user_name }}</a>
         <p>{{ post.body|truncatewords:"1" }}</p>
-        <button type="submit" name="action" value="view_details">View Details</button>
+        <div class="post-stats">
+          <span class="post-stat">发布时间:{{ post.created_time }}</span>
+          <span class="post-stat">收藏数:{{ post.favorites }}</span>
+          <span class="post-stat">观看数:{{ post.views }}</span>
+          <span class="post-stat">评论数:{{ post.comments }}</span>
+        </div>
+        <br>
+        <button type="submit" name="action" value="view_details">查看帖子详情</button>
         </form>
     </article>
     <hr>

@@ -85,9 +85,13 @@ def login(request):
                     context['my_name']=User.objects.get(id=int(request.session['bbs_user_id'])).user_name
                     return HttpResponseRedirect("/posts",context)
                 else:
-                    return HttpResponse("密码错误！")
+                    context={}
+                    context['str']="密码错误！"
+                    return render(request,"response.html",context)
             except:
-                return HttpResponse("用户名不存在！")
+                context={}
+                context['str']="用户名不存在！"
+                return render(request,"response.html",context)
         elif request.POST['action']=='register':
             now_user_name=request.POST['register-username']
             now_password=request.POST['register-password']
@@ -96,9 +100,13 @@ def login(request):
                 with transaction.atomic():
                     new_user=User(user_name=now_user_name,password=now_password)
                     new_user.save()
-                return HttpResponse("注册成功！")
+                context={}
+                context['str']="注册成功！"
+                return render(request,"response.html",context)
             else:
-                return HttpResponse("用户名已存在！注册失败！")
+                context={}
+                context['str']="用户名已存在！注册失败！"
+                return render(request,"response.html",context)
     return render(request,"login.html")
 
 def user_home(request,user_id):
