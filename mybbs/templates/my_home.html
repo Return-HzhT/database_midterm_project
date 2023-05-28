@@ -155,8 +155,8 @@
     <div class="form">
       <form action="#" method="post">
       {% csrf_token %}
-      <textarea name="post-title" placeholder="Enter your new post title">没有标题</textarea>
-      <textarea name="post-content" placeholder="Enter your new post body">如题</textarea>
+      <textarea name="post-title" placeholder="Enter your new post title" required></textarea>
+      <textarea name="post-content" placeholder="Enter your new post body" required></textarea>
       <button type="submit" name="action" value="new_post">发布新帖子</button>
       </form>
     </div>

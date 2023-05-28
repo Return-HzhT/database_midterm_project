@@ -153,7 +153,7 @@
   <main>
     <hr>
     <div class="post">
-      <h2>第0层：{{ title }}</h2>
+      <h2>{{ title }}</h2>
       <h4>{{ author }}<h4>
       <p>{{ body|linebreaks }}</p>
       <hr>
@@ -175,7 +175,11 @@
     {% csrf_token %}
     {% for comment in comments %}
     <article>
+        {% if comment.to_floor == 0 %}
+        <h4>第{{ comment.now_floor }}层：<span style="color:#d60303">{{ comment.speaker.user_name }}</span> 评论楼主：</h4>
+        {% else %}
         <h4>第{{ comment.now_floor }}层：<span style="color:#d60303">{{ comment.speaker.user_name }}</span> 评论第{{ comment.to_floor }}层：</h4>
+        {% endif %}
         <p>{{ comment.body }}</p>
         <button onclick="displayComment({{ comment.now_floor }})">评论</button>
     </article>
@@ -203,7 +207,12 @@
       var target_div=document.getElementById("comment-zone");
       target_div.hidden=false;
       var comment_target_floor_p = document.getElementById('target-floor');
-      comment_target_floor_p.innerHTML="回复第"+target_floor+"层";
+      if (target_floor==0){
+        comment_target_floor_p.innerHTML="评论楼主";
+      }
+      else {
+        comment_target_floor_p.innerHTML="评论第"+target_floor+"层";
+      }
       var comment_target_floor_input = document.getElementById('target_floor');
       comment_target_floor_input.getAttributeNode("value").value=target_floor.toString();
     }
